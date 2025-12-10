@@ -12,7 +12,7 @@ The datasets resulting from these filmed experiments (after applying tags to the
 
 ## :mouse2: Social Box Setup (example data)
 In our experiments, we used groups of four mice, that were marked with dyes of four different colors for identification purposes. The mice were housed in an enriched semi-naturalistic environment where they could move and interact freely over multiple days. Each arena contained a closed nest, two feeders, two water bottles, two ramps, an open shelter, and an S-shaped separation wall in the center.
-![social box setup](.\images\social_box_setup.png)
+![social box setup](images/social_box_setup.png)
 
 ## :mag: Overview
 Tailor-made for the the social box.
