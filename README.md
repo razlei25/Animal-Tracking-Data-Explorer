@@ -21,7 +21,11 @@ Data exploration features include:
 * Activity level comparison
 * Behaviour identification
 * Movement distance calculation
+
+
 Accompanying attributes:
+
+
 * Graphing and visualization options
 * Selection of:
         * Animal identity
