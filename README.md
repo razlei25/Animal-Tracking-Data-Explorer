@@ -28,6 +28,8 @@ Accompanying attributes:
 
 * Graphing and visualization options
 * Selection of:
+
+
         * Animal identity
         * Time frame
         * Location
