@@ -22,17 +22,12 @@ Data exploration features include:
 * Behaviour identification
 * Movement distance calculation
 
-
 Accompanying attributes:
-
-
 * Graphing and visualization options
 * Selection of:
-
-
-        * Animal identity
-        * Time frame
-        * Location
+    * Animal identity
+    * Time frame
+    * Location
 
 
 ## :file_folder: Project Structure
