@@ -8,7 +8,7 @@ This program is a no-code, user-friendly tool for exploring animal tracking data
 ## :dizzy: Motivation
 Animal movement tracking is a foundational to behavioral neuroscience research. At [Forkosh Lab](https://www.forkoshlab.com/), we use the social box - a seminatural setup for automatic and prolonged monitoring of mouse group dynamics (see "The Social Box Setup" below).
 
-This is an original setup that was developed by a group of researchers (up-to-date setup as described at [Forkosh et al., 2019](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.forkoshlab.com/_files/ugd/294655_eb32afe955b245d997b2a35a5f4b29e2.pdf)) and has been used in our lab as the standard framework for running our experiments.
+This is an original setup that was developed by a group of researchers (up-to-date setup as described at [Forkosh et al., 2019](https://www.nature.com/articles/s41593-019-0516-y)) and has been used in our lab as the standard framework for running our experiments.
 
 The datasets resulting from these filmed experiments (after initial processing of video, including application of tags to the frames, etc.) are rich but may be difficult to analyze for someone who's unfamiliar with their structure or with coding. Additionally, even researchers who are familiar with it may occasionally need to run a few quick checks to get an idea of the results before and while diving in to their analyses. Therefore it can be handy to have a tool that allows users to run quick calculations and visualizations of their data, without having to dirty their hands with long scripts of code.
 
