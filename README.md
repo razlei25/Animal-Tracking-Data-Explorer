@@ -12,7 +12,7 @@ This is an original setup that was developed by a group of researchers (up-to-da
 
 The datasets resulting from these filmed experiments (after initial processing of video, including application of tags to the frames, etc.) are rich but may be difficult to analyze for someone who's unfamiliar with their structure or with coding. Additionally, even researchers who are familiar with it may occasionally need to run a few quick checks to get an idea of the results before and while diving in to their analyses. Therefore it can be handy to have a tool that allows users to run quick calculations and visualizations of their data, without having to dirty their hands with long scripts of code.
 
-An important to clarification - most of the research in our lab in based on these types of experiments and so while this program is tailor-made for our data, its use is wide within our group. This program is sure to make data exploration easier for students in our lab.
+An important clarification - most of the research in our lab in based on these types of experiments and so while this program is tailor-made for our data, its use is wide within our group. This program is sure to make data exploration easier for students in our lab.
 
 
 ## :key: Key Features
