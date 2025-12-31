@@ -1,6 +1,4 @@
-"""
-Python translation of MATLAB mouse tracking analysis script.  
-Analyzes behavioral data from a three-chamber experiment with multiple mice.  
+"""  
 
 Required packages:
 - numpy
