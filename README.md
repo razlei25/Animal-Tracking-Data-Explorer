@@ -31,7 +31,7 @@ For convenience, I've attached example data from our social box experiments (```
 The plots visualize mouse movement, interaction, activity and behaviour.
 
 
-4 data exploration visualization types:
+**4 data exploration visualization types:**
 * Movement trajectory
     * Zone (indication of time spent in different locations)
     * Rest (indication lack of movement)
@@ -41,7 +41,7 @@ The plots visualize mouse movement, interaction, activity and behaviour.
 * Zone time spending distribution
 
 
-Accompanying attributes:
+**Accompanying attributes:**
 * Selection of:
     * Animal identity
     * Time frame
@@ -52,18 +52,24 @@ Accompanying attributes:
 ## :file_folder: Project Structure
 ```
 Animal-Tracking-Data-Explorer/
-├── data_explorer_analyses.py    # Core analysis functions
+├── data_explorer_analyses.py     # Core analysis functions
 ├── data_explorer_GUI.py          # Interactive GUI application
 ├── test_data_explorer.py         # Comprehensive test suite
 ├── pyproject.toml                # Project configuration and dependencies
 ├── README.md                     # Project overview
-├── README_proposal.md                     # Original project proposal
+├── README_proposal.md            # Original project proposal
 ├── .python-version               # Python version pinning for uv
 ├── data/
 │   └── mouse_data_v7.mat         # Example tracking data
 ├── images/
 │   └── social_box_setup.png      # Social box setup diagram
-└── outputs/                      # Generated plots (git-ignored)
+└── outputs/                      # Example output plots
+    ├── contact_heat_plot.png
+    ├── speed_plot.png
+    ├── trajectory_plot_contact.png
+    ├── trajectory_plot_rest.png
+    ├── trajectory_plot_zone.png
+    └── zone_time_plot.png
 ```
 
 ### Code Structure
@@ -116,8 +122,7 @@ Required packages:
    ```bash
    uv run data_explorer_GUI.py
    ```
-   
-   That's it! uv will automatically install the correct Python version and all dependencies on first run.
+
 
 #### Option 2: Using Standard Python/pip
 
@@ -138,7 +143,7 @@ If you prefer not to use uv:
    python data_explorer_GUI.py
    ```
 
-### Additional Commands
+### Alternative Command
 
 **Run using the installed command-line script** (after installation):
 ```bash
