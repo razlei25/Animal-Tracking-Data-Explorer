@@ -15,6 +15,18 @@ The datasets resulting from these filmed experiments (after initial processing o
 An important clarification - most of the research in our lab in based on these types of experiments and so while this program is tailor-made for our data, its use is wide within our group. This program is sure to make data exploration easier for students in our lab.
 
 
+## :mouse2: The Social Box Setup
+In our experiments, we used groups of four mice, that were marked with dyes of four different colors for identification purposes. The mice were housed in an enriched semi-naturalistic environment where they could move and interact freely over multiple days. Each arena contained a closed nest, two feeders, two water bottles, two ramps, an open shelter, and an S-shaped separation wall in the center.
+<p align="center">
+<img src="https://github.com/razlei25/Animal-Tracking-Data-Explorer/blob/main/images/social_box_setup.png" width="33%" />
+</p>
+
+
+## :paperclip: Data
+The program takes files of tracking data that have been pre-processed using a graphical wizard and our internal algorithm. In short, videos go through scaling, labeling & marking (a semi-manual process) and finally, frame segmentation and path tracking are employed.
+For convenience, I've attached example data from our social box experiments (```data\mouse_data_v7.mat```). Additional data files are publicly available at our [GitHub](https://github.com/OrenForkosh/6170_Animal_Cognition/tree/main/tracks).
+
+
 ## :key: Key Features
 The plots visualize mouse movement, interaction, activity and behaviour.
 
@@ -35,7 +47,6 @@ Accompanying attributes:
     * Time frame
 * Graphing options
 * Plot download
-
 
 
 ## :file_folder: Project Structure
@@ -73,20 +84,6 @@ Animal-Tracking-Data-Explorer/
   - `create_plot_panel()`: Creates the visualization area
   - `run_analysis()`: Executes the selected analysis program
   - `update_parameter_visibility()`: Shows/hides parameters based on program selection
-
-
-
-## :mouse2: The Social Box Setup
-In our experiments, we used groups of four mice, that were marked with dyes of four different colors for identification purposes. The mice were housed in an enriched semi-naturalistic environment where they could move and interact freely over multiple days. Each arena contained a closed nest, two feeders, two water bottles, two ramps, an open shelter, and an S-shaped separation wall in the center.
-<p align="center">
-<img src="https://github.com/razlei25/Animal-Tracking-Data-Explorer/blob/main/images/social_box_setup.png" width="33%" />
-</p>
-
-
-## :paperclip: Data
-The program takes files of tracking data that have been pre-processed using a graphical wizard and our internal algorithm. In short, videos go through scaling, labeling & marking (a semi-manual process) and finally, frame segmentation and path tracking are employed.
-For convenience, I've attached example data from our social box experiments (```data\mouse_data_v7.mat```). Additional data files are publicly available at our [GitHub](https://github.com/OrenForkosh/6170_Animal_Cognition/tree/main/tracks).
-
 
 
 ## :wrench: Operation
