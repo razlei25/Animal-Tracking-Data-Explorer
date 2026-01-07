@@ -330,7 +330,8 @@ def plot_trajectory(selected_mice, time_start=0, time_end=300,
             # Plot resting markers
             ax.plot(xs[rest_idx], ys[rest_idx], '^', 
                    color=mouse_cmap[s], markersize=9, 
-                   markerfacecolor=mouse_cmap[s])
+                   markerfacecolor=mouse_cmap[s],
+                   label=f'{mouse_names[s]} rest')
         
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         ax.set_title(f'Trajectories with Rest Markers ({time_start:.1f}s - {time_end:.1f}s)')

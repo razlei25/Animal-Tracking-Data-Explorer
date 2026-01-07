@@ -20,6 +20,9 @@ class MouseDataExplorerGUI:
         self.root.title("Mouse Tracking Data Explorer")
         self.root.geometry("1200x800")
         
+        # Set up proper window closing behavior
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
         # Mouse names and indices
         self.mouse_names = ['Red', 'Blue', 'Yellow', 'Green']
         self.zone_names = [
@@ -586,6 +589,15 @@ class MouseDataExplorerGUI:
                                f"An error occurred during analysis:\n{str(e)}")
             import traceback
             traceback.print_exc()
+    
+    def on_closing(self):
+        """Handle window close event to properly shut down the application."""
+        # Close all matplotlib figures
+        plt.close('all')
+        
+        # Destroy the root window
+        self.root.quit()
+        self.root.destroy()
 
 
 def main():

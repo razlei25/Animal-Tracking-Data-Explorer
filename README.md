@@ -44,12 +44,15 @@ Animal-Tracking-Data-Explorer/
 ├── data_explorer_analyses.py    # Core analysis functions
 ├── data_explorer_GUI.py          # Interactive GUI application
 ├── test_data_explorer.py         # Comprehensive test suite
-├── pyproject.toml                # Project configuration
+├── pyproject.toml                # Project configuration and dependencies
 ├── README.md                     # Project overview
+├── README_proposal.md                     # Original project proposal
+├── .python-version               # Python version pinning for uv
 ├── data/
 │   └── mouse_data_v7.mat         # Example tracking data
 ├── images/
-│   └── social_box_setup.png
+│   └── social_box_setup.png      # Social box setup diagram
+└── outputs/                      # Generated plots (git-ignored)
 ```
 
 ### Code Structure
@@ -88,30 +91,68 @@ For convenience, I've attached example data from our social box experiments (```
 
 ## :wrench: Operation
 ### Requirements
-See `pyproject.toml` for dependecies.
+See `pyproject.toml` for dependencies.
 
-All required packages are already installed in the virtual environment:
-- numpy
-- matplotlib
-- pandas
-- scipy
+Required packages (already in virtual environment):
+- numpy >= 1.20
+- matplotlib >= 3.5
+- scipy >= 1.10 (requires 64-bit Python on Windows)
 - tkinter (included with Python)
 
+### Installations
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
+1. **Install uv** (if not already installed):
+   ```bash
+   # On Windows (PowerShell)
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+
+2. **Clone or download** this repository
+
+3. **Navigate to the project directory**:
+   ```bash
+   cd Animal-Tracking-Data-Explorer
+   ```
+
 ### Running the Application
-To launch the GUI application, run `data_explorer_GUI.py`:
+
+The easiest way to run the application is with uv (automatically handles dependencies):
 
 ```bash
-python data_explorer_GUI.py
+uv run data_explorer_GUI.py
 ```
 
-Or from the virtual environment:
+Alternatively, using the command-line script:
+```bash
+uv run mouse-tracker-gui
+```
+
+Or run the standalone demo examples:
+```bash
+uv run data_explorer_games.py
+```
+
+### Running Tests
+
+To run the test suite with development dependencies:
 
 ```bash
-.venv/Scripts/python.exe data_explorer_GUI.py
+uv run --extra dev pytest
 ```
 
+For verbose output:
+```bash
+uv run --extra dev pytest -v
+```
 
 ### Troubleshooting
+
+**Error: "Failed to build scipy"**
+- Ensure you're using 64-bit Python (not 32-bit)
+- uv automatically installs 64-bit Python 3.8.20
+- Run: `uv python pin 3.8.20` to ensure correct Python version
 
 **Error: "Data file not found"**
 - Ensure the file `data/mouse_data_v7.mat` exists in the correct location
