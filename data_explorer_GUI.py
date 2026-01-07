@@ -4,10 +4,12 @@ Provides a user interface to run various analysis programs on mouse tracking dat
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import data_explorer_analyses as dea
+from pathlib import Path
+import os
 
 
 class MouseDataExplorerGUI:
@@ -102,6 +104,11 @@ class MouseDataExplorerGUI:
         run_button = ttk.Button(scrollable_frame, text="Run Analysis", 
                                command=self.run_analysis, style='Accent.TButton')
         run_button.pack(pady=20, padx=10, fill=tk.X)
+        
+        # Save Button
+        save_button = ttk.Button(scrollable_frame, text="Save Plot as Image", 
+                                command=self.save_plot)
+        save_button.pack(pady=5, padx=10, fill=tk.X)
         
         # Clear Button
         clear_button = ttk.Button(scrollable_frame, text="Clear Plot", 
@@ -221,6 +228,8 @@ class MouseDataExplorerGUI:
         self.info_label.pack(expand=True)
         
         self.canvas = None
+        self.toolbar = None
+        self.current_figure = None
         
     def update_parameter_visibility(self):
         """Update which parameter sections are visible based on selected program."""
@@ -294,10 +303,63 @@ class MouseDataExplorerGUI:
             self.canvas.get_tk_widget().destroy()
             self.canvas = None
         
+        if self.toolbar:
+            self.toolbar.destroy()
+            self.toolbar = None
+        
+        if self.current_figure:
+            plt.close(self.current_figure)
+            self.current_figure = None
+        
         self.info_label = ttk.Label(self.plot_frame, 
                                    text="Select a program and click 'Run Analysis' to display results",
                                    font=('Arial', 11))
         self.info_label.pack(expand=True)
+    
+    def save_plot(self):
+        """Save the current plot as an image file."""
+        if self.current_figure is None:
+            messagebox.showwarning("No Plot", 
+                                 "Please run an analysis first to generate a plot.")
+            return
+        
+        # Get Downloads folder
+        downloads_folder = Path.home() / "Downloads"
+        
+        # Generate default filename based on program
+        program = self.program_var.get()
+        program_names = {
+            "trajectory": "trajectory_plot",
+            "contact_heat": "contact_heatmap",
+            "speed": "speed_plot",
+            "time_zone": "time_by_zone_plot"
+        }
+        default_name = program_names.get(program, "plot")
+        
+        # Ask user for save location
+        filetypes = [
+            ("PNG files", "*.png"),
+            ("PDF files", "*.pdf"),
+            ("SVG files", "*.svg"),
+            ("JPEG files", "*.jpg"),
+            ("All files", "*.*")
+        ]
+        
+        filepath = filedialog.asksaveasfilename(
+            initialdir=downloads_folder,
+            initialfile=f"{default_name}.png",
+            defaultextension=".png",
+            filetypes=filetypes,
+            title="Save Plot As"
+        )
+        
+        if filepath:
+            try:
+                self.current_figure.savefig(filepath, dpi=300, bbox_inches='tight')
+                messagebox.showinfo("Success", f"Plot saved to:\n{filepath}")
+            except Exception as e:
+                messagebox.showerror("Save Error", 
+                                   f"Failed to save plot:\n{str(e)}")
         
     def run_analysis(self):
         """Run the selected analysis program."""
@@ -316,8 +378,14 @@ class MouseDataExplorerGUI:
             if self.canvas:
                 self.canvas.get_tk_widget().destroy()
                 self.canvas = None
+            if self.toolbar:
+                self.toolbar.destroy()
+                self.toolbar = None
             if hasattr(self, 'info_label') and self.info_label:
                 self.info_label.destroy()
+            if self.current_figure:
+                plt.close(self.current_figure)
+                self.current_figure = None
             
             # Run appropriate analysis
             fig = None
@@ -371,13 +439,20 @@ class MouseDataExplorerGUI:
             
             # Display the plot
             if fig:
+                # Store the figure reference
+                self.current_figure = fig
+                
+                # Create canvas
                 self.canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
                 self.canvas.draw()
-                self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
                 
-                # Close the matplotlib figure to free memory
-                # (the canvas keeps a reference)
-                plt.close(fig)
+                # Add navigation toolbar for zoom, pan, and save
+                self.toolbar = NavigationToolbar2Tk(self.canvas, self.plot_frame)
+                self.toolbar.update()
+                
+                # Pack toolbar first, then canvas
+                self.toolbar.pack(side=tk.TOP, fill=tk.X)
+                self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
                 
         except FileNotFoundError as e:
             messagebox.showerror("Data File Not Found", 

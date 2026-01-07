@@ -1,7 +1,53 @@
 [project]
 name = "mouse-tracking-data-visualizer"
 version = "0.1.0"
-description = "Add your description here"
+description = "Interactive GUI application for analyzing and visualizing mouse tracking data from behavioral experiments"
 readme = "README.md"
 requires-python = ">=3.8"
+authors = [
+    { name = "Raz" }
+]
+keywords = ["mouse tracking", "behavioral analysis", "data visualization", "neuroscience"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
 dependencies = []
+
+[project.optional-dependencies]
+full = [
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "pandas>=2.0.0",
+    "scipy>=1.9.0",
+    "opencv-python>=4.5.0",
+]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=5.0.0",
+]
+
+[project.scripts]
+mouse-tracker-gui = "data_explorer_GUI:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+addopts = "-p no:cov"
+testpaths = ["test_data_explorer.py"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
