@@ -1,8 +1,3 @@
-Add tests file
-
-
-
-
 # Mouse Tracking Data Visualizer
 **A no-code, user-friendly program for exploring animal tracking data.**
 
