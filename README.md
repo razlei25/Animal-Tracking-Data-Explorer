@@ -93,59 +93,75 @@ For convenience, I've attached example data from our social box experiments (```
 ### Requirements
 See `pyproject.toml` for dependencies.
 
-Required packages (already in virtual environment):
+Required packages:
+- Python 3.8 or higher (64-bit recommended for Windows)
 - numpy >= 1.20
 - matplotlib >= 3.5
 - scipy >= 1.10 (requires 64-bit Python on Windows)
 - tkinter (included with Python)
 
-### Installations
+### Installation & Running
 
-This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+#### Option 1: Using uv (Recommended - Easiest)
 
-1. **Install uv** (if not already installed):
+[uv](https://docs.astral.sh/uv/) automatically manages dependencies and Python versions.
+
+1. **Install uv** (one-time setup):
    ```bash
    # On Windows (PowerShell)
    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   
+   # On macOS/Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-2. **Clone or download** this repository
-
-3. **Navigate to the project directory**:
+2. **Run the application** (no other installation needed):
    ```bash
-   cd Animal-Tracking-Data-Explorer
+   uv run data_explorer_GUI.py
+   ```
+   
+   That's it! uv will automatically install the correct Python version and all dependencies on first run.
+
+#### Option 2: Using Standard Python/pip
+
+If you prefer not to use uv:
+
+1. **Ensure you have Python 3.8+ (64-bit)** installed:
+   ```bash
+   python --version
    ```
 
-### Running the Application
+2. **Install dependencies**:
+   ```bash
+   pip install numpy matplotlib scipy
+   ```
 
-The easiest way to run the application is with uv (automatically handles dependencies):
+3. **Run the application**:
+   ```bash
+   python data_explorer_GUI.py
+   ```
 
-```bash
-uv run data_explorer_GUI.py
-```
+### Additional Commands
 
-Alternatively, using the command-line script:
+**Run using the installed command-line script** (after installation):
 ```bash
 uv run mouse-tracker-gui
 ```
 
-Or run the standalone demo examples:
-```bash
-uv run data_explorer_games.py
-```
-
 ### Running Tests
 
-To run the test suite with development dependencies:
-
+**With uv:**
 ```bash
 uv run --extra dev pytest
 ```
 
-For verbose output:
+**With standard Python:**
 ```bash
-uv run --extra dev pytest -v
+pip install pytest pytest-cov
+pytest
 ```
+
+For verbose output, add `-v` flag to pytest.
 
 ### Troubleshooting
 
