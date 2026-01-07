@@ -1,4 +1,6 @@
-"""  
+"""
+Python translation of MATLAB mouse tracking analysis script.   
+Analyzes behavioral data from a three-chamber experiment with multiple mice.  
 
 Required packages:
 - numpy
@@ -22,16 +24,16 @@ import warnings
 
 def load_cheese_cube(mat_file_path):
     """
-    Load CheeseCube data from .mat file.
+    Load CheeseCube data from . mat file.
     
-    Parameters:
+    Parameters: 
     -----------
-    mat_file_path :  str or Path
+    mat_file_path :   str or Path
         Path to the .mat file containing experiment data
     
-    Returns:
+    Returns: 
     --------
-    dict :  Dictionary containing all loaded data
+    dict :   Dictionary containing all loaded data
     """
     data = loadmat(mat_file_path, struct_as_record=False, squeeze_me=True)
     return data
@@ -42,28 +44,41 @@ def get_mouse_colormap(colors_obj, n_subjects):
     
     Parameters:
     -----------
-    colors_obj : various
+    colors_obj :   various
         Colors object/struct from the data
     n_subjects : int
         Number of subjects/mice
     
-    Returns: 
+    Returns:  
     --------
-    numpy.ndarray : n_subjects x 3 RGB colormap (values 0-1)
+    numpy.ndarray :   n_subjects x 3 RGB colormap (values 0-1)
     """
     letter_map = {
         'R': [1, 0, 0], 'G': [0, 1, 0], 'B': [0, 0, 1], 'Y': [1, 1, 0],
         'C': [0, 1, 1], 'M':  [1, 0, 1], 'K': [0, 0, 0], 'W': [1, 1, 1]
     }
     
+    # Default color order: Red, Blue, Yellow, Green
+    default_colors = np.array([
+        [1, 0, 0],    # Red
+        [0, 0, 1],    # Blue
+        [1, 1, 0],    # Yellow
+        [0, 1, 0]     # Green
+    ])
+    
     numeric_map = None
     mice_str = ''
     
     # Try to extract colormap and mice string
     try:
-        if hasattr(colors_obj, 'colormap'):
-            numeric_map = np.array(colors_obj.colormap, dtype=float)
-        if hasattr(colors_obj, 'mice'):
+        if hasattr(colors_obj, 'Colormap'):
+            numeric_map = np.array(colors_obj. Colormap, dtype=float)
+        elif hasattr(colors_obj, 'colormap'):
+            numeric_map = np.array(colors_obj. colormap, dtype=float)
+            
+        if hasattr(colors_obj, 'Mice'):
+            mice_str = str(colors_obj.Mice)
+        elif hasattr(colors_obj, 'mice'):
             mice_str = str(colors_obj.mice)
     except:
         pass
@@ -75,17 +90,22 @@ def get_mouse_colormap(colors_obj, n_subjects):
     # Build colormap
     cmap = np.zeros((n_subjects, 3))
     
+    # First try to use the Mice string to map letters to colors
     for s in range(n_subjects):
         if s < len(mice_str):
-            ch = mice_str[s].upper()
-            if ch in letter_map: 
+            ch = mice_str[s]. upper()
+            if ch in letter_map:  
                 cmap[s] = letter_map[ch]
                 continue
         
-        if numeric_map is not None: 
-            cmap[s] = numeric_map[s % len(numeric_map)]
+        # Then try numeric colormap
+        if numeric_map is not None and s < len(numeric_map):
+            cmap[s] = numeric_map[s]
+        # Finally, use default RBYG colors
+        elif s < len(default_colors):
+            cmap[s] = default_colors[s]
         else:
-            # Fallback to matplotlib colormap
+            # Fallback for more than 4 mice
             cmap[s] = plt.cm.viridis(s / n_subjects)[:3]
     
     return cmap
@@ -94,14 +114,14 @@ def get_mouse_colormap(colors_obj, n_subjects):
 # Setup and Data Loading
 # ==============================================================================
 
-# Updated data path
+# Use the v7 converted file
 data_file = Path(r"data\mouse_data_v7.mat")
 
 print(f"Loading data from: {data_file}")
 
 # Check if file exists
 if not data_file.exists():
-    raise FileNotFoundError(f"Data file not found:  {data_file}")
+    raise FileNotFoundError(f"Data file not found:   {data_file}")
 
 cube_day1 = load_cheese_cube(data_file)
 
@@ -120,29 +140,49 @@ print(f"Available keys: {list(cube_day1.keys())}")
 for key in cube_day1.keys():
     if not key.startswith('__'):
         val = cube_day1[key]
-        print(f"  {key: 12s} :  type={type(val).__name__: 20s}  shape={getattr(val, 'shape', 'N/A')}")
+        print(f"  {key:12s} :   type={type(val).__name__:20s}  shape={getattr(val, 'shape', 'N/A')}")
 
-# Extract main components
-tracking = cube_day1.get('tracking', None)
-video_info = cube_day1.get('video', None)
-background = cube_day1.get('background', None)
-arena = cube_day1.get('arena', None)
-colors = cube_day1.get('colors', None)
+# Extract main components (capital letters to match loaded data)
+tracking = cube_day1.get('Tracking', None)
+video_info = cube_day1.get('Video', None)
+background_struct = cube_day1.get('Background', None)
+arena = cube_day1.get('ROI', None)
+colors = cube_day1.get('Colors', None)
+
+# Debug: Print structure
+if tracking is not None:
+    print("\nTracking attributes:")
+    if hasattr(tracking, '_fieldnames'):
+        print(f"  Fields: {tracking._fieldnames}")
+    print(f"  Type: {type(tracking)}")
+    
+if video_info is not None:  
+    print("\nVideo attributes:")
+    if hasattr(video_info, '_fieldnames'):
+        print(f"  Fields:  {video_info._fieldnames}")
 
 # Video info
-if video_info is not None:
+if video_info is not None: 
     print("\nVideo Information:")
-    if hasattr(video_info, 'frameRate'):
-        fps = float(video_info.frameRate)
+    if hasattr(video_info, 'FrameRate'):
+        fps = float(video_info.FrameRate)
         print(f"  Frame rate: {fps} fps")
-    if hasattr(video_info, 'numFrames'):
-        total_frames = int(video_info.numFrames)
-        print(f"  Total frames: {total_frames}")
+    if hasattr(video_info, 'NumberOfFrames'):
+        total_frames = int(video_info.NumberOfFrames)
+        print(f"  Total frames:  {total_frames}")
 
-# Background
-if background is not None:
+# Background - extract the image array
+background = None
+if background_struct is not None:
     print("\nBackground:")
-    if isinstance(background, np.ndarray):
+    if hasattr(background_struct, 'Image'):
+        background = background_struct.Image
+    elif hasattr(background_struct, 'image'):
+        background = background_struct.image
+    elif isinstance(background_struct, np.ndarray):
+        background = background_struct
+        
+    if background is not None and isinstance(background, np.ndarray):
         print(f"  Shape: {background.shape}")
         print(f"  Min/Max: {background.min()} / {background.max()}")
         
@@ -203,7 +243,7 @@ print("="*80)
 # Extract tracking data
 x = np.array(tracking.x, dtype=float)
 y = np.array(tracking.y, dtype=float)
-fps = float(video_info.frameRate)
+fps = float(video_info.FrameRate)  # Capital F and R
 
 # Calculate frames for 15 minutes
 frames_15 = min(int(15 * 60 * fps), x.shape[1])
@@ -213,6 +253,13 @@ n_subjects = x.shape[0]
 
 # Get mouse colormap
 mouse_cmap = get_mouse_colormap(colors, n_subjects)
+# Debug: Print extracted color information
+print(f"\nMouse color mapping:")
+if hasattr(colors, 'Mice'):
+    print(f"  Mice string: {colors.Mice}")
+elif hasattr(colors, 'mice'):
+    print(f"  Mice string: {colors.mice}")
+print(f"  Extracted colormap:\n{mouse_cmap}")
 
 # Plot trajectories
 plt.figure(figsize=(14, 12))
@@ -275,7 +322,7 @@ plt.figure(figsize=(14, 12))
 
 for s in range(n_subjects):
     xs = x[s, :frames_15]
-    ys = y[s, : frames_15]
+    ys = y[s, :frames_15]
     
     if zones.ndim == 1:
         zs = zones[:frames_15]
@@ -333,10 +380,14 @@ print("GAME 3: Time Spent per Zone")
 print("="*80)
 
 # Get arena colormap for zones
-if hasattr(arena, 'colormap'):
+zone_cmap = None
+if hasattr(arena, 'Colormap'):
+    zone_cmap = np.array(arena.Colormap, dtype=float)
+elif hasattr(arena, 'colormap'):
     zone_cmap = np.array(arena.colormap, dtype=float)
-    if zone_cmap.max() > 1:
-        zone_cmap = zone_cmap / 255.0
+
+if zone_cmap is not None and zone_cmap.max() > 1:
+    zone_cmap = zone_cmap / 255.0
 else:
     zone_cmap = plt.cm.tab10(np.linspace(0, 1, n_zones))
 
@@ -379,20 +430,29 @@ df_zones = pd.DataFrame(zone_times,
 print(df_zones)
 
 # ==============================================================================
-# Game 4.1: Calculate Distance Traveled
+# Game 4. 1: Calculate Distance Traveled
 # ==============================================================================
 
 print("\n" + "="*80)
 print("GAME 4.1: Distance Traveled")
 print("="*80)
 
-pixel_to_cm = float(arena.pixelToCM)
+# Get pixel to cm conversion from ROI
+pixel_to_cm = None
+if hasattr(arena, 'PixelToCM'):
+    pixel_to_cm = float(arena.PixelToCM)
+elif hasattr(arena, 'pixelToCM'):
+    pixel_to_cm = float(arena.pixelToCM)
+else:
+    # Fallback - estimate from typical arena size
+    print("Warning: pixelToCM not found, using default value of 3.0")
+    pixel_to_cm = 3.0
 
 total_distance_m = np.zeros(n_subjects)
 
 for s in range(n_subjects):
     xs = x[s, :frames_15]
-    ys = y[s, : frames_15]
+    ys = y[s, :frames_15]
     
     dx = np.diff(xs)
     dy = np.diff(ys)
