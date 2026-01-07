@@ -1,13 +1,8 @@
-Add tests file
-
-
-
-
 # Mouse Tracking Data Visualizer
 **A no-code, user-friendly program for exploring animal tracking data.**
 
 ## :mag: Overview
-This program is a no-code, user-friendly tool for exploring animal tracking data from social box experiments. It allows quick calculations and visualizations of pre-processed mouse movement datasets, making analysis accessible to both coders and non-coders. Designed for behavioral neuroscience research, it helps users examine group dynamics and activity in a semi-naturalistic environment. Example data and visualizations are provided for convenience. The tool streamlines initial data exploration, enabling users to focus on scientific insights.
+This program is a no-code, user-friendly tool for exploring animal tracking data from social box experiments. It allows quick visualizations of pre-processed mouse movement datasets, making analysis accessible to both coders and non-coders. Designed for behavioral neuroscience research, it helps users examine group dynamics and activity in a semi-naturalistic environment. Example data and visualizations are provided for convenience. The tool streamlines initial data exploration, enabling users to focus on scientific insights.
 
 
 ## :dizzy: Motivation
@@ -21,33 +16,61 @@ An important clarification - most of the research in our lab in based on these t
 
 
 ## :key: Key Features
-Data exploration features include:
-* Trajectory plotting
-* Activity level comparison
-* Behaviour identification
-* Movement distance calculation
+The plots visualize mouse movement, interaction, activity and behaviour.
+
+
+4 data exploration visualization types:
+* Movement trajectory
+    * Zone (indication of time spent in different locations)
+    * Rest (indication lack of movement)
+    * Contact events (indecation of interaction between mice)
+* Contact heat map
+* Speed plot
+* Zone time spending distribution
+
 
 Accompanying attributes:
-* Graphing and visualization options
 * Selection of:
     * Animal identity
     * Time frame
-    * Location
+* Graphing options
+* Plot download
+
 
 
 ## :file_folder: Project Structure
 ```
 Animal-Tracking-Data-Explorer/
-├── data_explorer_calculator.py
-├── data_explorer_GUI.py
-├── main.py
-├── pyproject.toml
-├── README.md
+├── data_explorer_analyses.py    # Core analysis functions
+├── data_explorer_GUI.py          # Interactive GUI application
+├── test_data_explorer.py         # Comprehensive test suite
+├── pyproject.toml                # Project configuration
+├── README.md                     # Project overview
 ├── data/
-│   └── THREE_CHAMBER-exp.exp0014.day01.cam04.mp4.obj.mat
+│   └── mouse_data_v7.mat         # Example tracking data
 ├── images/
 │   └── social_box_setup.png
 ```
+
+### Code Structure
+
+#### data_explorer_analyses.py Functions
+
+- `load_data()`: Loads and prepares the mouse tracking data
+- `get_mouse_colormap()`: Extracts color mapping for mice
+- `plot_trajectory()`: Program #1 implementation
+- `plot_contact_heatmap()`: Program #2 implementation
+- `plot_speed()`: Program #3 implementation
+- `plot_time_by_zone()`: Program #4 implementation
+
+#### data_explorer_GUI.py Classes
+
+- `MouseDataExplorerGUI`: Main GUI application class
+  - `create_control_panel()`: Creates the parameter selection interface
+  - `create_plot_panel()`: Creates the visualization area
+  - `run_analysis()`: Executes the selected analysis program
+  - `update_parameter_visibility()`: Shows/hides parameters based on program selection
+
 
 
 ## :mouse2: The Social Box Setup
@@ -59,8 +82,52 @@ In our experiments, we used groups of four mice, that were marked with dyes of f
 
 ## :paperclip: Data
 The program takes files of tracking data that have been pre-processed using a graphical wizard and our internal algorithm. In short, videos go through scaling, labeling & marking (a semi-manual process) and finally, frame segmentation and path tracking are employed.
-For convenience, I've attached example data from our social box experiments (```data\THREE_CHAMBER-exp.exp0014.day01.cam04.mp4.obj```). Additional data files are publicly available at our [GitHub](https://github.com/OrenForkosh/6170_Animal_Cognition/tree/main/tracks).
+For convenience, I've attached example data from our social box experiments (```data\mouse_data_v7.mat```). Additional data files are publicly available at our [GitHub](https://github.com/OrenForkosh/6170_Animal_Cognition/tree/main/tracks).
 
 
 
+## :wrench: Operation
+### Requirements
+See `pyproject.toml` for dependecies.
+
+All required packages are already installed in the virtual environment:
+- numpy
+- matplotlib
+- pandas
+- scipy
+- tkinter (included with Python)
+
+### Running the Application
+To launch the GUI application, run `data_explorer_GUI.py`:
+
+```bash
+python data_explorer_GUI.py
+```
+
+Or from the virtual environment:
+
+```bash
+.venv/Scripts/python.exe data_explorer_GUI.py
+```
+
+
+### Troubleshooting
+
+**Error: "Data file not found"**
+- Ensure the file `data/mouse_data_v7.mat` exists in the correct location
+
+**Error: "No mice selected"**
+- Select at least one mouse using the checkboxes
+
+**Error: "Not enough mice"** (for contact analysis)
+- Select at least 2 mice for contact-based analyses
+
+**Error: "Invalid time range"**
+- Ensure end time > start time >= 0
+- Ensure both start and end times are within the video duration (0 to 43200.35 seconds / 720.01 minutes for the example data)
+- The error message will display the valid time range for your specific data file
+
+**Plots appear too small**
+- You can resize the application window
+- The plot panel will automatically adjust to fill the available space
 

@@ -27,8 +27,15 @@ class MouseDataExplorerGUI:
             'Labyrinth', 'BigNest', 'Block', '[Ramp1]', '[Ramp2]', 'Water2'
         ]
         
+        # Data file path and duration
+        self.data_file_path = Path(r"data\mouse_data_v7.mat")
+        self.max_duration = None
+        
         # Create main layout
         self.create_widgets()
+        
+        # Load initial data file info
+        self.load_data_file_info()
         
     def create_widgets(self):
         """Create all GUI widgets."""
@@ -72,6 +79,9 @@ class MouseDataExplorerGUI:
         title_label = ttk.Label(scrollable_frame, text="Analysis Programs", 
                                font=('Arial', 14, 'bold'))
         title_label.pack(pady=10)
+        
+        # Data File Selection
+        self.create_data_file_selection(scrollable_frame)
         
         # Program Selection
         program_frame = ttk.LabelFrame(scrollable_frame, text="Select Program", padding=10)
@@ -153,6 +163,11 @@ class MouseDataExplorerGUI:
         self.time_label = ttk.Label(self.time_frame, text="(Default: 0-300s = 5 minutes)", 
                  font=('Arial', 8, 'italic'))
         self.time_label.pack(pady=2)
+        
+        # Duration info label
+        self.duration_label = ttk.Label(self.time_frame, text="Loading data...", 
+                 font=('Arial', 9), foreground="blue")
+        self.duration_label.pack(pady=2)
         
     def create_behavior_markers_selection(self, parent):
         """Create behavior markers selection (for trajectory plot only)."""
@@ -265,6 +280,49 @@ class MouseDataExplorerGUI:
             self.zone_selection_frame.pack(fill=tk.X, pady=5)
         else:
             self.zone_selection_frame.pack_forget()
+    
+    def create_data_file_selection(self, parent):
+        """Create data file selection widget."""
+        file_frame = ttk.LabelFrame(parent, text="Data File", padding=10)
+        file_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        # Current file display
+        self.file_label = ttk.Label(file_frame, text=str(self.data_file_path), 
+                                    font=('Arial', 9), foreground='green', wraplength=350)
+        self.file_label.pack(fill=tk.X, pady=2)
+        
+        # Browse button
+        browse_button = ttk.Button(file_frame, text="Browse for Different File", 
+                                   command=self.browse_data_file)
+        browse_button.pack(pady=5)
+    
+    def browse_data_file(self):
+        """Open file dialog to select a different data file."""
+        filetypes = [
+            ("MAT files", "*.mat"),
+            ("All files", "*.*")
+        ]
+        
+        filepath = filedialog.askopenfilename(
+            title="Select Data File",
+            initialdir=Path.cwd() / "data",
+            filetypes=filetypes
+        )
+        
+        if filepath:
+            self.data_file_path = Path(filepath)
+            self.file_label.config(text=str(self.data_file_path))
+            self.load_data_file_info()
+    
+    def load_data_file_info(self):
+        """Load data file information and update duration display."""
+        try:
+            self.max_duration = dea.get_max_duration(self.data_file_path)
+            duration_text = f"Video duration: {self.max_duration:.2f}s ({self.max_duration/60:.2f} min / {self.max_duration/3600:.2f} hrs)"
+            self.duration_label.config(text=duration_text, foreground="blue")
+        except Exception as e:
+            self.duration_label.config(text=f"Error loading file: {str(e)}", foreground="red")
+            self.max_duration = None
             
     def get_selected_mice(self):
         """Get list of selected mouse indices."""
@@ -373,6 +431,12 @@ class MouseDataExplorerGUI:
         # Get program
         program = self.program_var.get()
         
+        # Check if max_duration is loaded
+        if self.max_duration is None:
+            messagebox.showerror("Data Error", 
+                               "Unable to load data file. Please check the file path.")
+            return
+        
         try:
             # Clear previous plot
             if self.canvas:
@@ -396,6 +460,20 @@ class MouseDataExplorerGUI:
                 if start is None:
                     return
                 
+                # Validate timeframe
+                if start >= self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"Start time ({start}s) exceeds or equals video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                if end > self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"End time ({end}s) exceeds video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                
                 # Get behavior markers
                 behavior = self.behavior_var.get()
                 if behavior == "none":
@@ -410,7 +488,7 @@ class MouseDataExplorerGUI:
                                              "Please select at least one zone to highlight")
                         return
                 
-                fig = dea.plot_trajectory(selected_mice, start, end, behavior, selected_zones)
+                fig = dea.plot_trajectory(selected_mice, start, end, behavior, selected_zones, self.data_file_path)
                 
             elif program == "contact_heat":
                 if len(selected_mice) < 2:
@@ -421,21 +499,66 @@ class MouseDataExplorerGUI:
                 start, end = self.get_time_range()
                 if start is None:
                     return
-                fig = dea.plot_contact_heatmap(selected_mice, start, end)
+                
+                # Validate timeframe
+                if start >= self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"Start time ({start}s) exceeds or equals video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                if end > self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"End time ({end}s) exceeds video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                
+                fig = dea.plot_contact_heatmap(selected_mice, start, end, self.data_file_path)
                 
             elif program == "speed":
                 # Get time range
                 start, end = self.get_time_range()
                 if start is None:
                     return
-                fig = dea.plot_speed(selected_mice, start, end)
+                
+                # Validate timeframe
+                if start >= self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"Start time ({start}s) exceeds or equals video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                if end > self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"End time ({end}s) exceeds video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                
+                fig = dea.plot_speed(selected_mice, start, end, self.data_file_path)
                 
             elif program == "time_zone":
                 # Get time range
                 start, end = self.get_time_range()
                 if start is None:
                     return
-                fig = dea.plot_time_by_zone(selected_mice, start, end)
+                
+                # Validate timeframe
+                if start >= self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"Start time ({start}s) exceeds or equals video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                if end > self.max_duration:
+                    messagebox.showerror("Invalid Time Range", 
+                                       f"End time ({end}s) exceeds video duration.\n"
+                                       f"Valid range: 0 to {self.max_duration:.2f} seconds "
+                                       f"({self.max_duration/60:.2f} minutes)")
+                    return
+                
+                fig = dea.plot_time_by_zone(selected_mice, start, end, self.data_file_path)
             
             # Display the plot
             if fig:

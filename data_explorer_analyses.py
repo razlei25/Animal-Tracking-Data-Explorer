@@ -108,15 +108,23 @@ def get_mouse_colormap(colors_obj, n_subjects):
     return cmap
 
 
-def load_data():
+def load_data(data_file=None):
     """
     Load and prepare mouse tracking data.
+    
+    Parameters:
+    -----------
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
     
     Returns:
     --------
     tuple : (tracking, video_info, arena, colors, x, y, n_subjects, fps)
     """
-    data_file = Path(r"data\mouse_data_v7.mat")
+    if data_file is None:
+        data_file = Path(r"data\mouse_data_v7.mat")
+    else:
+        data_file = Path(data_file)
     
     if not data_file.exists():
         raise FileNotFoundError(f"Data file not found: {data_file}")
@@ -143,12 +151,31 @@ def get_mouse_names():
     return ['Red', 'Blue', 'Yellow', 'Green']
 
 
+def get_max_duration(data_file=None):
+    """
+    Get the maximum duration of the video in seconds.
+    
+    Parameters:
+    -----------
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
+    
+    Returns:
+    --------
+    float : Maximum duration in seconds
+    """
+    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data(data_file)
+    total_frames = x.shape[1]
+    max_duration = total_frames / fps
+    return max_duration
+
+
 # ==============================================================================
 # Program #1: Trajectory Plot
 # ==============================================================================
 
 def plot_trajectory(selected_mice, time_start=0, time_end=300, 
-                   behavior_markers=None, selected_zones=None):
+                   behavior_markers=None, selected_zones=None, data_file=None):
     """
     Plot mouse trajectories with optional behavior markers.
     
@@ -164,13 +191,15 @@ def plot_trajectory(selected_mice, time_start=0, time_end=300,
         Type of markers to add: 'zone', 'rest', 'contact', or None
     selected_zones : list of int or None
         Zone IDs to highlight (only used if behavior_markers='zone')
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
     
     Returns:
     --------
     matplotlib.figure.Figure : The created figure
     """
     # Load data
-    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data()
+    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data(data_file)
     
     # Calculate frame range
     frame_start = int(time_start * fps)
@@ -399,7 +428,7 @@ def plot_trajectory(selected_mice, time_start=0, time_end=300,
 # Program #2: Contact Heat Plot
 # ==============================================================================
 
-def plot_contact_heatmap(selected_mice, time_start=0, time_end=None):
+def plot_contact_heatmap(selected_mice, time_start=0, time_end=None, data_file=None):
     """
     Create a heatmap showing contact time between pairs of mice.
     
@@ -411,13 +440,15 @@ def plot_contact_heatmap(selected_mice, time_start=0, time_end=None):
         Start time in seconds (default: 0)
     time_end : float or None
         End time in seconds (default: None = entire recording)
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
     
     Returns:
     --------
     matplotlib.figure.Figure : The created figure
     """
     # Load data
-    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data()
+    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data(data_file)
     
     # Calculate frame range
     frame_start = int(time_start * fps)
@@ -508,9 +539,9 @@ def plot_contact_heatmap(selected_mice, time_start=0, time_end=None):
 # Program #3: Speed Plot
 # ==============================================================================
 
-def plot_speed(selected_mice, time_start=0, time_end=300):
+def plot_speed(selected_mice, time_start=0, time_end=300, data_file=None):
     """
-    Plot mouse speed over time.
+    Plot speed over time for selected mice.
     
     Parameters:
     -----------
@@ -520,13 +551,15 @@ def plot_speed(selected_mice, time_start=0, time_end=300):
         Start time in seconds (default: 0)
     time_end : float
         End time in seconds (default: 300 = 5 minutes)
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
     
     Returns:
     --------
     matplotlib.figure.Figure : The created figure
     """
     # Load data
-    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data()
+    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data(data_file)
     
     # Calculate frame range
     frame_start = int(time_start * fps)
@@ -576,25 +609,27 @@ def plot_speed(selected_mice, time_start=0, time_end=300):
 # Program #4: Time by Zone Plot
 # ==============================================================================
 
-def plot_time_by_zone(selected_mice, time_start=0, time_end=3600):
+def plot_time_by_zone(selected_mice, time_start=0, time_end=3600, data_file=None):
     """
-    Plot time spent in each zone as a bar chart.
+    Plot time spent by each mouse in different zones as a stacked bar chart.
     
     Parameters:
     -----------
     selected_mice : list of int
-        Indices of mice to plot (0=Red, 1=Blue, 2=Yellow, 3=Green)
+        Indices of mice to analyze (0=Red, 1=Blue, 2=Yellow, 3=Green)
     time_start : float
         Start time in seconds (default: 0)
     time_end : float
         End time in seconds (default: 3600 = 1 hour)
+    data_file : str or Path, optional
+        Path to the data file. If None, uses default path.
     
     Returns:
     --------
     matplotlib.figure.Figure : The created figure
     """
     # Load data
-    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data()
+    tracking, video_info, arena, colors, x, y, n_subjects, fps = load_data(data_file)
     
     # Calculate frame range
     frame_start = int(time_start * fps)
