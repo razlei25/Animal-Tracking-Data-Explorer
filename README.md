@@ -35,7 +35,7 @@ The plots visualize mouse movement, interaction, activity and behaviour.
 * Movement trajectory
     * Zone (indication of time spent in different locations)
     * Rest (indication lack of movement)
-    * Contact events (indecation of interaction between mice)
+    * Contact events (indication of interaction between mice)
 * Contact heat map
 * Speed plot
 * Zone time spending distribution
