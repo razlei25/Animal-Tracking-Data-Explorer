@@ -222,8 +222,20 @@ def plot_trajectory(selected_mice, time_start=0, time_end=300,
             'Labyrinth', 'BigNest', 'Block', '[Ramp1]', '[Ramp2]', 'Water2'
         ]
         
-        # Line styles for zones
-        line_styles = ['-', '--', ':', '-.']
+        # Line styles for zones (11 unique styles for 11 zones)
+        line_styles = [
+            '-',                    # solid
+            '--',                   # dashed
+            ':',                    # dotted
+            '-.',                   # dash-dot
+            (0, (3, 1, 1, 1)),     # densely dashdotted
+            (0, (5, 5)),           # loosely dashed
+            (0, (3, 5, 1, 5)),     # dashdotted
+            (0, (1, 1)),           # densely dotted
+            (0, (5, 1)),           # densely dashed
+            (0, (3, 1, 1, 1, 1, 1)), # densely dashdotdotted
+            (0, (1, 5))            # loosely dotted
+        ]
         zone_style_map = {}
         
         if selected_zones is None:
@@ -264,7 +276,7 @@ def plot_trajectory(selected_mice, time_start=0, time_end=300,
                 
                 style = zone_style_map.get(zone_id, '-')
                 ax.plot(xs[idx1:idx2], ys[idx1:idx2], 
-                       style, color=mouse_cmap[s], linewidth=1.5)
+                       linestyle=style, color=mouse_cmap[s], linewidth=1.5)
         
         # Create legend
         from matplotlib.lines import Line2D
